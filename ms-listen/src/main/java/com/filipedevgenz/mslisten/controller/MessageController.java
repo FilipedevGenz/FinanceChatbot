@@ -1,6 +1,7 @@
 package com.filipedevgenz.mslisten.controller;
 
 import com.filipedevgenz.mslisten.dto.MessageDTO;
+import com.filipedevgenz.mslisten.service.MessageService;
 import com.filipedevgenz.mslisten.util.ContextHolder;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/message")
 public class MessageController {
+
+    MessageService messageService;
 
     @Value("${token.security}")
     private String tokenSecurity;
@@ -23,10 +26,10 @@ public class MessageController {
                 .messages().get(0);
         String number = message.from();
         ContextHolder.setNumero(number);
-        //TODO implementar requisicao para o ms-crud
-
-        //System.out.println("From: " + message.from());
-        System.out.println("Text: " + message.text().body());
+        if(message.text() == null){
+            throw new NullPointerException();
+        }
+        messageService.messageTreatment(message.text().body(),message.timestamp());
 
         return ResponseEntity.ok().build();
     }
