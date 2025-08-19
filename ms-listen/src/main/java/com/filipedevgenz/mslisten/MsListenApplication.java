@@ -13,6 +13,7 @@ public class MsListenApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MsListenApplication.class, args);
 	}
+
 	@Bean
 	RestClient restClient() {
 		return RestClient.create();

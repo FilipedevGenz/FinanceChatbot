@@ -19,6 +19,7 @@ public class ExceptionHandller {
 
     final RestClient restClient = RestClient.create();
 
+    //ao enviar uma mensagem em qualquer formato nao texto, eh levantado NullPointer
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
         MessageResponseDTO responseDTO = new MessageResponseDTO("Whatsapp"

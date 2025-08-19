@@ -7,6 +7,7 @@ public record MessageResponseDTO (
         Text text
 ) {
     public record Text(String body) {}
+
     public static Text fromText(String text) {
         return new Text(text);
     }

@@ -1,6 +1,5 @@
 package com.filipedevgenz.mslisten.model;
 
-import com.filipedevgenz.mslisten.dto.MessageDTO;
 import lombok.Getter;
 import lombok.Setter;
 

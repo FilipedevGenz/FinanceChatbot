@@ -1,9 +1,9 @@
 package com.filipedevgenz.mslisten.controller;
 
-import com.filipedevgenz.mslisten.dto.MessageDTO;
+import com.filipedevgenz.mslisten.dto.RecivedMessageDTO;
+import com.filipedevgenz.mslisten.dto.MessageResponseDTO;
 import com.filipedevgenz.mslisten.service.MessageService;
 import com.filipedevgenz.mslisten.util.ContextHolder;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,8 @@ public class MessageController {
     private String tokenSecurity;
 
     @PostMapping
-    public ResponseEntity<Void> receiveMessage(@RequestBody MessageDTO messageDTO) {
-        var message = messageDTO.entry().get(0)
+    public ResponseEntity<Void> receiveMessage(@RequestBody RecivedMessageDTO recivedMessageDTO) {
+        var message = recivedMessageDTO.entry().get(0)
                 .changes().get(0)
                 .value()
                 .messages().get(0);
@@ -30,6 +30,8 @@ public class MessageController {
             throw new NullPointerException();
         }
         messageService.messageTreatment(message.text().body(),message.timestamp());
+
+
 
         return ResponseEntity.ok().build();
     }

@@ -2,7 +2,7 @@ package com.filipedevgenz.mslisten.dto;
 
 import java.util.List;
 
-public record MessageDTO(
+public record RecivedMessageDTO(
         List<Entry> entry
 ) {
     public record Entry(
