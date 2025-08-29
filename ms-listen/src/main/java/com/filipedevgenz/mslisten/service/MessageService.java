@@ -1,59 +1,77 @@
 package com.filipedevgenz.mslisten.service;
-import com.filipedevgenz.mslisten.dto.MessageResponseDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.filipedevgenz.mslisten.dto.RecivedMessageDTO;
+import com.filipedevgenz.mslisten.dto.ResponseMessageDocumentDTO;
+import com.filipedevgenz.mslisten.dto.SecureDataDTO;
 import com.filipedevgenz.mslisten.model.Data;
+import com.filipedevgenz.mslisten.model.Message;
 import com.filipedevgenz.mslisten.util.ContextHolder;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
+import com.filipedevgenz.mslisten.util.Mapper;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-//TODO implementar requisicao para o ms-crud
-
+@AllArgsConstructor
 @Service
 public class MessageService {
-    @Value("${token.acess}")
-    private String ACCESS_TOKEN;
 
-    @Value("${routes.whatsappPostTestRoute}")
-    private String WHATSAPP_API_URL;
+    private final RequestService requestService;
+    private final PasswordEncoder numberEncoder;
+    final KafkaDataSendRequest kafkaDataSendRequest;
 
-    final RestClient restClient = RestClient.create();
+    @Async
+    public void messageTreatment(RecivedMessageDTO recivedMessageDTO) {
+        Message message = verifyMessage(recivedMessageDTO);
+        if(message.getText().equals("/info")){
+            sendInfoToWhatsapp(message.getFrom());
+            return;
+        }
 
-    public Data messageTreatment(String text , String timestamp) {
-        String[] values = text.split(" ");
-
-        return new Data(values[0],values[1],timestamp);
+        String[] tokens = message.getText().split(" ");
+        Data toSave;
+        if(tokens.length == 3){
+            toSave = new Data(tokens[0], tokens[1], tokens[2], message.getTimestamp(),message.getFrom());
+        }else {
+            toSave = new Data(tokens[0], tokens[1], message.getTimestamp(),message.getFrom());
+        }
+        kafkaDataSendRequest.SendRequest(toSave);
+        requestService.sendMessageWithRetry
+                ("dado adicionado, para informacoes de gastos, '/info; ",message.getFrom());
     }
+
+    protected void sendInfoToWhatsapp(String number) {
+        var responseDTO = requestInfoToWhatsapp(numberEncoder.encode(number));
+        if (responseDTO.getBody()==null){
+            requestService.sendMessageWithRetry("nao ah dados", number);
+        }
+        requestService.sendDocumentWithRetry(number
+                ,responseDTO.getBody().document().link()
+                ,responseDTO.getBody().document().filename());
+    }
+
+    private ResponseEntity<ResponseMessageDocumentDTO> requestInfoToWhatsapp(String hashedNumber) {
+        //TODO Request ms-info
+        }
+
+    private Message verifyMessage(RecivedMessageDTO recivedMessageDTO){
+        var message = Mapper.mapToMessage(recivedMessageDTO);
+        if(message.getText() == null){
+            ContextHolder.setNumero(message.getFrom());
+            throw new NullPointerException();
+        }
+        return message;
+    }
+
+
 
     //kafka para ms-crud
-    private void saveData(Data data) {
+/*    private void saveData(Data data) {
         restClient.p
                 //token seguranca
+                hash do numero
     }
-
-    private ResponseEntity< MessageResponseDTO > sendMessage(String text, String uris) {
-        MessageResponseDTO responseDTO = new MessageResponseDTO("Whatsapp"
-                , ContextHolder.getNumero()
-                ,"text"
-                , MessageResponseDTO.fromText(text));
-
-        ResponseEntity<String> request = restClient.post()
-                .uri(WHATSAPP_API_URL)
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(responseDTO)
-                .retrieve()
-                .toEntity(String.class);
-
-        return ResponseEntity.status(request.getStatusCode()).body(responseDTO);
-    }
-    }
-
-    private ResponseEntity<Data> kafkaRequest(String token) {
-
-    }
-
-    private Double stringToDouble(String string) {
-        return Double.parseDouble(string.replace(",","."));
-    }
+*/
 }

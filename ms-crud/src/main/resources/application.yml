@@ -1,12 +1,11 @@
 spring:
   cloud:
     consul:
-      discovery: #porta consul n definida, padrao 8500
+      discovery: #porta consul n definida, padrao localhost 8500
         instance-id: ${spring.application.name}-${spring.cloud.client.hostname}-${server.port}
         serviceName: financeChatbot-${spring.application.name}
         healthCheckPath: /actuator/health
         healthCheckInterval: 3m
-        healthCheckTimeout: 30s
   kafka:
     bootstrap-servers: localhost:9092
     producer:
@@ -14,17 +13,13 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     template:
       default-topic: data-topic
+      group-id: ms-crud
   application:
     name:  ms-listen
-routes:
-  whatsappPostTestRoute: "https://graph.facebook.com/v23.0/690964500775870/messages"
-token:
-  security: "whatsappmessage"
-  acess: "EAAfpPIDAZCEsBPFEpbKqZAOwoLppQWBroxWkaZCAcZAJdPEFfHYwkjN3ZAJLiCBbr9raP1OWRFdqGxTHCdjZAJQMYefEcX8IG5ZAdxHpOJ7DV3mjFSeTZCHaGTPU2yYZCVIil0PFImiBFCj8MCxppRZBvJ6O32wdimaoeSQyZA7WNnaTmPbb2y7zeeFxISD4sIfOxhdki8kHrX32RacEXHP4jtMv9rDbIgC1nN9KZCMdta0JjqqdVGnm"
 
 management:   #HeathChecksPorts
   server:
-    port: 4452
+    port: 4454
 jwt:
   private: classpath:app.key
   public: classpath:app.pub

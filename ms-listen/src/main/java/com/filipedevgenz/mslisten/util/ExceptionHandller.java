@@ -1,13 +1,12 @@
 package com.filipedevgenz.mslisten.util;
 
-import com.filipedevgenz.mslisten.dto.MessageResponseDTO;
+import com.filipedevgenz.mslisten.dto.ResponseMessageTextDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @ControllerAdvice
 public class ExceptionHandller {
@@ -22,10 +21,10 @@ public class ExceptionHandller {
     //ao enviar uma mensagem em qualquer formato nao texto, eh levantado NullPointer
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
-        MessageResponseDTO responseDTO = new MessageResponseDTO("Whatsapp"
+        ResponseMessageTextDTO responseDTO = new ResponseMessageTextDTO("Whatsapp"
                 ,ContextHolder.getNumero()
                 ,"text"
-                , MessageResponseDTO.fromText("Formato Invalido, envie uma mensagem de texto"));
+                , ResponseMessageTextDTO.fromText("Formato Invalido, envie uma mensagem de texto"));
 
         restClient.post()
                 .uri(WHATSAPP_API_URL)

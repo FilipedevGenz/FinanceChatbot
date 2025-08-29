@@ -1,6 +1,6 @@
 package com.filipedevgenz.mslisten.dto;
 
-public record MessageResponseDTO (
+public record ResponseMessageTextDTO(
         String messaging_product,
         String to,
         String type,
