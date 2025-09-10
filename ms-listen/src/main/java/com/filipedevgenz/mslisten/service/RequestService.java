@@ -68,7 +68,7 @@ public class RequestService {
         }
     }
 
-    @Async
+    @Async("ioBound")
     public void sendMessageWithRetry(String text,String number) {
         HttpStatusCode status = sendMessageToWhatsapp(text,number)
                 .getStatusCode();

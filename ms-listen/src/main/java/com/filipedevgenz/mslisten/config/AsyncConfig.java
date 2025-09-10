@@ -6,19 +6,35 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Configuration
 @EnableAsync
 public class AsyncConfig {
 
-    @Bean
+    private final int nCpus = Runtime.getRuntime().availableProcessors();
+
+    @Bean(name = "ioBound")
     public Executor asyncTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(8);
-        executor.setQueueCapacity(200);
+        executor.setCorePoolSize(nCpus*2);
+        executor.setMaxPoolSize(nCpus*4);
+        executor.setQueueCapacity(100);
         executor.setThreadNamePrefix("Async-");
         executor.initialize();
         return executor;
     }
+
+    @Bean(name = "cpuBound")
+    public Executor cpuBoundExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(nCpus);
+        executor.setMaxPoolSize(nCpus);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("CPU-");
+        executor.initialize();
+        return executor;
+    }
+
 }

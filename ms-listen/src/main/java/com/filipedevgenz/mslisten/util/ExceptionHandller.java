@@ -1,3 +1,4 @@
+/*
 package com.filipedevgenz.mslisten.util;
 
 import com.filipedevgenz.mslisten.dto.ResponseMessageTextDTO;
@@ -16,15 +17,17 @@ public class ExceptionHandller {
     @Value("${token.acess}")
     private String ACCESS_TOKEN;
 
+
+
     final RestClient restClient = RestClient.create();
 
-    //ao enviar uma mensagem em qualquer formato nao texto, eh levantado NullPointer
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<String> handleNullPointerException(NullPointerException e) {
         ResponseMessageTextDTO responseDTO = new ResponseMessageTextDTO("Whatsapp"
                 ,ContextHolder.getNumero()
                 ,"text"
                 , ResponseMessageTextDTO.fromText("Formato Invalido, envie uma mensagem de texto"));
+                ContextHolder.clear();
 
         restClient.post()
                 .uri(WHATSAPP_API_URL)
@@ -36,3 +39,4 @@ public class ExceptionHandller {
         return ResponseEntity.badRequest().body(responseDTO.toString());
     }
 }
+*/
